@@ -5,7 +5,7 @@ const express = require('express');
 
 const key = process.argv[2];
 
-const notifs = []
+const notifs = [];
 
 const sites = [
     {name: 'ground floor', url: 'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&begane-grond'},
@@ -39,7 +39,7 @@ function sendNotification(text) {
             body: text,
             title: 'Ravel Checker'
         }
-    }
+    };
 
     let opt = Object.assign(options, {body: JSON.stringify(message)});
 
@@ -58,7 +58,7 @@ function checkFloor(floor) {
             return;
         }
 
-        let $ = cheerio.load(body)
+        let $ = cheerio.load(body);
 
         let $floor = $(
             '#bovenste-rij,' +
@@ -75,7 +75,7 @@ function checkFloor(floor) {
             '#far-top-left,' +
             '#mid-top-left-small,' +
             '#far-top-left-small'
-        )
+        );
 
         const furnished = $floor.find('a.furnature');
         const unfurnished = $floor.find('a.beschikbaar');
@@ -109,4 +109,4 @@ app.get('/ravel', function (req, res) {
   res.send(notifs);
 });
 
-app.listen(4444)
+app.listen(4444);
