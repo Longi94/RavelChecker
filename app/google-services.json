@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "721493874730",
+    "firebase_url": "https://ravelchecker.firebaseio.com",
+    "project_id": "ravelchecker",
+    "storage_bucket": "ravelchecker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721493874730:android:7e42414487c0b47f",
+        "android_client_info": {
+          "package_name": "in.dragonbra.ravelchecker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "721493874730-k4mokr1lqaojrjpj8ukcanfjbumdc72f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.dragonbra.ravelchecker",
+            "certificate_hash": "1fb14865651d91934751e9a3b07ddf9320a0e89e"
+          }
+        },
+        {
+          "client_id": "721493874730-t400jd5jsinsjflp76gs5dpvf4s1aed4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEDIdYEy0wHd0MzDF2zyJZqTN2wslI9xM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "721493874730-t400jd5jsinsjflp76gs5dpvf4s1aed4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
