@@ -5,7 +5,9 @@ const express = require('express');
 
 const key = process.argv[2];
 
-const notifs = [];
+console.log("key=" + key);
+
+let lastNotification = {};
 
 const sites = [
     {name: 'ground floor', url: 'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&begane-grond'},
@@ -23,7 +25,7 @@ const options = {
   }
 };
 
-schedule.scheduleJob('*/5 * * * *', function () {
+schedule.scheduleJob('*/1 * * * *', function () {
     console.log(new Date() + ' checking...');
     for (let i = 0; i < sites.length; i++) {
         checkFloor(sites[i]);
@@ -78,26 +80,27 @@ function checkFloor(floor) {
         );
 
         const furnished = $floor.find('a.furnature');
-        const unfurnished = $floor.find('a.beschikbaar');
+        const unfurnished = $floor.find('a.option');
+        const now = Date.now();
 
         if (furnished.length > 0) {
             sendNotification("There are " + furnished.length + " free furnished rooms one the "
                 + floor.name);
 
-            notifs.push({
-                text: furnished.length + " free furnished rooms one the " + floor.name,
-                date: new Date()
-            });
+            lastNotification = {
+                text: furnished.length + " free furnished rooms on the " + floor.name,
+                date: now
+            };
         }
 
         if (unfurnished.length > 0) {
             sendNotification("There are " + unfurnished.length + " free unfurnished rooms one the "
                 + floor.name);
 
-            notifs.push({
-                text: unfurnished.length + " free unfurnished rooms one the " + floor.name,
-                date: new Date()
-            });
+            lastNotification = {
+                text: unfurnished.length + " free unfurnished rooms on the " + floor.name,
+                date: now
+            };
         }
     });
 }
@@ -106,7 +109,7 @@ const app = express();
 
 app.get('/ravel', function (req, res) {
   res.type('json');
-  res.send(notifs);
+  res.send(lastNotification);
 });
 
 app.listen(4444);
