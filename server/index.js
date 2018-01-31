@@ -23,7 +23,7 @@ const options = {
   }
 };
 
-const j = schedule.scheduleJob('*/5 * * * *', function () {
+schedule.scheduleJob('*/5 * * * *', function () {
     console.log(new Date() + ' checking...');
     for (let i = 0; i < sites.length; i++) {
         checkFloor(sites[i]);
@@ -43,7 +43,7 @@ function sendNotification(text) {
 
     let opt = Object.assign(options, {body: JSON.stringify(message)});
 
-    request.post(options, (error, response, body) => {
+    request.post(opt, (error, response, body) => {
         if (error) {
             console.log(error);
         }
