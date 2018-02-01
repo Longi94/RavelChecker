@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RavelChecker</string>
     <string name="title_activity_main">Ravel Checker</string>
+    <string name="switch_notifications">Notifications</string>
 </resources>

@@ -2,12 +2,11 @@ package `in`.dragonbra.ravelchecker
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.app.NotificationManager
 import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.content.Context.NOTIFICATION_SERVICE
-
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 /**
@@ -17,6 +16,8 @@ class RavelCheckerApplication : Application() {
     @SuppressLint("NewApi")
     override fun onCreate() {
         super.onCreate()
+
+        FirebaseMessaging.getInstance().subscribeToTopic("ravel")
 
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
