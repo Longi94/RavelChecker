@@ -66,7 +66,7 @@ schedule.scheduleJob('*/1 * * * *', function () {
             );
 
             const furnished = $floor.find('a.furnature');
-            const unfurnished = $floor.find('a.option');
+            const unfurnished = $floor.find('a.beschikbaar');
 
             if (furnished.length > 0) {
                 floors.push(i);
