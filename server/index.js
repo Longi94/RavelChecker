@@ -44,6 +44,8 @@ schedule.scheduleJob('*/1 * * * *', function () {
         let floors = [];
         let furnishedRooms = 0;
         let unfurnishedRooms = 0;
+        let reservedRooms = 0;
+        let rentedRooms = 0;
 
         for (let i = 0; i < values.length; i++) {
             let $ = cheerio.load(values[i]);
@@ -66,7 +68,9 @@ schedule.scheduleJob('*/1 * * * *', function () {
             );
 
             const furnished = $floor.find('a.furnature');
-            const unfurnished = $floor.find('a.beschikbaar');
+            const unfurnished = $floor.find('a.beschikbaar:not(.furnature)');
+            const reserved = $floor.find('a.option');
+            const rented = $floor.find('a.verhuurd');
 
             if (furnished.length > 0) {
                 floors.push(i);
@@ -77,15 +81,25 @@ schedule.scheduleJob('*/1 * * * *', function () {
                 floors.push(i);
                 unfurnishedRooms += unfurnished.length;
             }
+
+            if (reserved.length > 0) {
+                reservedRooms += reserved.length;
+            }
+
+            if (rented.length > 0) {
+                rentedRooms += rented.length;
+            }
         }
 
-        if (furnishedRooms + unfurnishedRooms > 0) {
-            lastNotification = {
-                furnished: furnishedRooms,
-                unfurnished: unfurnishedRooms,
-                timestamp: Date.now()
-            };
+        lastNotification = {
+            furnished: furnishedRooms,
+            unfurnished: unfurnishedRooms,
+            reserved: reservedRooms,
+            rented: rentedRooms,
+            timestamp: Date.now()
+        };
 
+        if (furnishedRooms + unfurnishedRooms > 0) {
             sendMessage(lastNotification);
         }
     });
