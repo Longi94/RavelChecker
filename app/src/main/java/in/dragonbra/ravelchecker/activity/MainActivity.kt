@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), Callback {
         refresh.setOnClickListener { getNotification() }
         switch1.isChecked = prefs.getBoolean(PREF_NOTIFICATION_KEY, true)
 
-        switch1.setOnCheckedChangeListener({ buttonView, isChecked ->
+        switch1.setOnCheckedChangeListener({ _, isChecked ->
             prefs.edit().putBoolean(PREF_NOTIFICATION_KEY, isChecked).apply()
 
             if (isChecked) {
@@ -54,7 +54,10 @@ class MainActivity : AppCompatActivity(), Callback {
             i.data = Uri.parse("http://ravelresidence.studentexperience.nl/?language=en")
             startActivity(i)
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
         getNotification()
     }
 
@@ -69,6 +72,8 @@ class MainActivity : AppCompatActivity(), Callback {
     override fun onFailure(call: Call?, e: IOException?) {
         furnished.text = "? furnished"
         unfurnished.text = "? unfurnished"
+        rented.text = "? rented"
+        reserved.text = "? reserved"
         timestamp.text = "Failed"
     }
 
@@ -76,6 +81,8 @@ class MainActivity : AppCompatActivity(), Callback {
         if (response != null && response.code() >= 300) {
             furnished.text = "? furnished"
             unfurnished.text = "? unfurnished"
+            rented.text = "? rented"
+            reserved.text = "? reserved"
             timestamp.text = "Failed"
             return
         }
@@ -85,11 +92,15 @@ class MainActivity : AppCompatActivity(), Callback {
         if (notification.timestamp == null) {
             furnished.text = "0 furnished"
             unfurnished.text = "0 unfurnished"
+            rented.text = "0 rented"
+            reserved.text = "0 reserved"
             timestamp.text = "Never"
         } else {
 
             furnished.text = "${notification.furnished} furnished"
             unfurnished.text = "${notification.unfurnished} unfurnished"
+            rented.text = "${notification.rented} rented"
+            reserved.text = "${notification.reserved} reserved"
             timestamp.text = DateUtils.getRelativeTimeSpanString(notification.timestamp,
                     System.currentTimeMillis(), MINUTE_IN_MILLIS)
         }

@@ -1,11 +1,13 @@
 package `in`.dragonbra.ravelchecker
 
+import `in`.dragonbra.ravelchecker.activity.MainActivity
 import android.annotation.SuppressLint
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.preference.PreferenceManager
 import com.google.firebase.messaging.FirebaseMessaging
 
 
@@ -17,7 +19,12 @@ class RavelCheckerApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        FirebaseMessaging.getInstance().subscribeToTopic("ravel")
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        if (prefs.getBoolean(MainActivity.PREF_NOTIFICATION_KEY, true)) {
+            FirebaseMessaging.getInstance().subscribeToTopic("ravel")
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("ravel")
+        }
 
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
