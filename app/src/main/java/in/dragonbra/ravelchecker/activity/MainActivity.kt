@@ -21,7 +21,7 @@ import java.io.IOException
 class MainActivity : AppCompatActivity(), Callback {
 
     companion object {
-        val PREF_NOTIFICATION_KEY = "pref_notification"
+        const val PREF_NOTIFICATION_KEY = "pref_notification"
     }
 
     private val client = OkHttpClient()
@@ -70,39 +70,43 @@ class MainActivity : AppCompatActivity(), Callback {
     }
 
     override fun onFailure(call: Call?, e: IOException?) {
-        furnished.text = "? furnished"
-        unfurnished.text = "? unfurnished"
-        rented.text = "? rented"
-        reserved.text = "? reserved"
-        timestamp.text = "Failed"
-    }
-
-    override fun onResponse(call: Call?, response: Response?) {
-        if (response != null && response.code() >= 300) {
+        runOnUiThread {
             furnished.text = "? furnished"
             unfurnished.text = "? unfurnished"
             rented.text = "? rented"
             reserved.text = "? reserved"
             timestamp.text = "Failed"
-            return
         }
+    }
 
-        val notification = gson.fromJson(response?.body()?.string(), RavelNotification::class.java)
+    override fun onResponse(call: Call?, response: Response?) {
+        runOnUiThread {
+            if (response != null && response.code() >= 300) {
+                furnished.text = "? furnished"
+                unfurnished.text = "? unfurnished"
+                rented.text = "? rented"
+                reserved.text = "? reserved"
+                timestamp.text = "Failed"
+                return@runOnUiThread
+            }
 
-        if (notification.timestamp == null) {
-            furnished.text = "0 furnished"
-            unfurnished.text = "0 unfurnished"
-            rented.text = "0 rented"
-            reserved.text = "0 reserved"
-            timestamp.text = "Never"
-        } else {
+            val notification = gson.fromJson(response?.body()?.string(), RavelNotification::class.java)
 
-            furnished.text = "${notification.furnished} furnished"
-            unfurnished.text = "${notification.unfurnished} unfurnished"
-            rented.text = "${notification.rented} rented"
-            reserved.text = "${notification.reserved} reserved"
-            timestamp.text = DateUtils.getRelativeTimeSpanString(notification.timestamp,
-                    System.currentTimeMillis(), MINUTE_IN_MILLIS)
+            if (notification.timestamp == null) {
+                furnished.text = "0 furnished"
+                unfurnished.text = "0 unfurnished"
+                rented.text = "0 rented"
+                reserved.text = "0 reserved"
+                timestamp.text = "Never"
+            } else {
+                furnished.text = "${notification.furnished} furnished"
+                unfurnished.text = "${notification.unfurnished} unfurnished"
+                rented.text = "${notification.rented} rented"
+                reserved.text = "${notification.reserved} reserved"
+                timestamp.text = DateUtils.getRelativeTimeSpanString(notification.timestamp,
+                        System.currentTimeMillis(), MINUTE_IN_MILLIS)
+            }
+
         }
     }
 
