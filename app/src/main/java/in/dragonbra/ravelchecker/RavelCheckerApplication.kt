@@ -31,7 +31,9 @@ class RavelCheckerApplication : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel("ravel",
                     "Ravel Checker",
-                    NotificationManager.IMPORTANCE_DEFAULT)
+                    NotificationManager.IMPORTANCE_HIGH)
+            channel.enableVibration(true)
+            channel.lightColor = 0xffffffff.toInt()
             mNotificationManager.createNotificationChannel(channel)
         }
 

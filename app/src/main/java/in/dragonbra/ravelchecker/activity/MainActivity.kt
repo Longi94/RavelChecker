@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), Callback {
         refresh.setOnClickListener { getNotification() }
         switch1.isChecked = prefs.getBoolean(PREF_NOTIFICATION_KEY, true)
 
-        switch1.setOnCheckedChangeListener({ _, isChecked ->
+        switch1.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(PREF_NOTIFICATION_KEY, isChecked).apply()
 
             if (isChecked) {
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), Callback {
             } else {
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("ravel")
             }
-        })
+        }
 
         visit.setOnClickListener {
             val i = Intent(Intent.ACTION_VIEW)
