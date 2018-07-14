@@ -98,6 +98,8 @@ schedule.scheduleJob('*/1 * * * *', function () {
             rented: rentedRooms,
             timestamp: Date.now()
         };
+        
+        console.log(lastNotification)
 
         if (furnishedRooms + unfurnishedRooms > 0) {
             sendMessage(lastNotification);
@@ -121,9 +123,6 @@ function sendMessage(data) {
         }
         console.log(body);
     });
-}
-
-function checkFloor(url, i) {
 }
 
 const app = express();
