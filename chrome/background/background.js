@@ -9,4 +9,10 @@ let notificationOptions = {
 
 chrome.runtime.onMessage.addListener((request, sender) => {
     chrome.notifications.create(notificationId, notificationOptions);
+    playSound();
 });
+
+function playSound() {
+    let audio = new Audio("pitched-so-high.mp3");
+    audio.play();
+}
