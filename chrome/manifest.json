@@ -19,7 +19,8 @@
   "content_scripts": [
     {
       "matches": [
-        "http://ravelresidence.studentexperience.nl/*"
+        "http://ravelresidence.studentexperience.nl/*",
+        "http://roomselector.studentexperience.nl/*"
       ],
       "js": [
         "jquery-3.2.1.min.js",

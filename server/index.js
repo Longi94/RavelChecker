@@ -7,14 +7,41 @@ const key = process.argv[2];
 
 console.log("key=" + key);
 
-let lastNotification = {};
+let lastRavel = {};
 
-const sites = [
+let lastAmstel = {};
+
+let lastNatique= {};
+
+const ravelSites = [
     'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&begane-grond',
     'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&eerste-verdieping',
     'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&tweede-verdieping',
     'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&derde-verdieping',
     'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&vierde-verdieping'
+];
+
+const amstelHomeSites = [
+    'http://roomselector.studentexperience.nl/plattegrond.php?pagina=2&vierde-verdieping',
+    'http://roomselector.studentexperience.nl/plattegrond.php?pagina=2&derde-verdieping',
+    'http://roomselector.studentexperience.nl/plattegrond.php?pagina=2&tweede-verdieping',
+    'http://roomselector.studentexperience.nl/plattegrond.php?pagina=2&eerste-verdieping',
+    'http://roomselector.studentexperience.nl/plattegrond.php?pagina=2&begane-grond'
+];
+
+const natiqueLivingSites = [
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&eerste-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&tweede-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&derde-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&vierde-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&vijfde-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&zesde-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&zevende-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&achtste-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&negende-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&tiende-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&elfde-verdieping',
+    'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&twaalfde-verdieping'
 ];
 
 const options = {
@@ -25,10 +52,16 @@ const options = {
   }
 };
 
-schedule.scheduleJob('*/1 * * * *', function () {
-    console.log(new Date() + ' checking...');
+schedule.scheduleJob('*/5 * * * * *', function () {
+    checkRavel();
+    checkAmstel();
+    checkNatique();
+});
 
-    const promises = sites.map(url => new Promise((resolve, reject) => {
+function checkRavel() {
+    console.log(new Date() + ' checking ravel...');
+
+    const promises = ravelSites.map(url => new Promise((resolve, reject) => {
         request.get(url, (error, response, body) => {
             if (error) {
                 console.log(error);
@@ -40,7 +73,6 @@ schedule.scheduleJob('*/1 * * * *', function () {
     }));
 
     Promise.all(promises).then(values => {
-
         let floors = [];
         let furnishedRooms = 0;
         let unfurnishedRooms = 0;
@@ -91,26 +123,171 @@ schedule.scheduleJob('*/1 * * * *', function () {
             }
         }
 
-        lastNotification = {
+        lastRavel = {
             furnished: furnishedRooms,
             unfurnished: unfurnishedRooms,
             reserved: reservedRooms,
             rented: rentedRooms,
             timestamp: Date.now()
         };
-        
-        console.log(lastNotification)
 
         if (furnishedRooms + unfurnishedRooms > 0) {
-            sendMessage(lastNotification);
+            sendMessage(lastRavel, 'ravel');
         }
     });
-});
+}
 
-function sendMessage(data) {
-    console.log('sending message...');
+function checkAmstel() {
+
+    console.log(new Date() + ' checking amstel home...');
+
+    const promises = amstelHomeSites.map(url => new Promise((resolve, reject) => {
+        request.get(url, (error, response, body) => {
+            if (error) {
+                console.log(error);
+                return reject(error);
+            }
+
+            resolve(body);
+        });
+    }));
+
+    Promise.all(promises).then(values => {
+        let floors = [];
+        let furnishedRooms = 0;
+        let unfurnishedRooms = 0;
+        let reservedRooms = 0;
+        let rentedRooms = 0;
+
+        for (let i = 0; i < values.length; i++) {
+            let $ = cheerio.load(values[i]);
+
+            let $floor = $(
+                '#bovenste-rij-bg,' +
+                '#top-left-bg,' +
+                '#bottom-bg,' +
+                '#tweede-rij-bg,' +
+                '#middle-left-bg,' +
+                '#derde-rij-bg,' +
+                '#bovenste-rij,' +
+                '#far-right,' +
+                '#bottom,' +
+                '#far-left,' +
+                '#tweede-rij-first,' +
+                '#tweede-rij,' +
+                '#mid-right,' +
+                '#derde-rij,' +
+                '#derde-rij-first,' +
+                '#mid-left'
+            );
+
+            const furnished = $floor.find('a.furnature');
+            const unfurnished = $floor.find('a.beschikbaar:not(.furnature)');
+            const reserved = $floor.find('a.option');
+            const rented = $floor.find('a.verhuurd');
+
+            if (furnished.length > 0) {
+                floors.push(i);
+                furnishedRooms += furnished.length;
+            }
+
+            if (unfurnished.length > 0) {
+                floors.push(i);
+                unfurnishedRooms += unfurnished.length;
+            }
+
+            if (reserved.length > 0) {
+                reservedRooms += reserved.length;
+            }
+
+            if (rented.length > 0) {
+                rentedRooms += rented.length;
+            }
+        }
+
+        lastAmstel = {
+            furnished: furnishedRooms,
+            unfurnished: unfurnishedRooms,
+            reserved: reservedRooms,
+            rented: rentedRooms,
+            timestamp: Date.now()
+        };
+
+        if (furnishedRooms + unfurnishedRooms > 0) {
+            sendMessage(lastAmstel, 'amstel');
+        }
+    });
+}
+
+function checkNatique() {
+
+    console.log(new Date() + ' checking natique living...');
+
+    const promises = natiqueLivingSites.map(url => new Promise((resolve, reject) => {
+        request.get(url, (error, response, body) => {
+            if (error) {
+                console.log(error);
+                return reject(error);
+            }
+
+            resolve(body);
+        });
+    }));
+
+    Promise.all(promises).then(values => {
+        let floors = [];
+        let furnishedRooms = 0;
+        let unfurnishedRooms = 0;
+        let reservedRooms = 0;
+        let rentedRooms = 0;
+
+        for (let i = 0; i < values.length; i++) {
+            let $ = cheerio.load(values[i]);
+
+            let $floor = $('#floorplan_polygon_container');
+
+            const furnished = $floor.find('a.furnature');
+            const unfurnished = $floor.find('a.beschikbaar:not(.furnature)');
+            const reserved = $floor.find('a.option');
+            const rented = $floor.find('a.verhuurd');
+
+            if (furnished.length > 0) {
+                floors.push(i);
+                furnishedRooms += furnished.length;
+            }
+
+            if (unfurnished.length > 0) {
+                floors.push(i);
+                unfurnishedRooms += unfurnished.length;
+            }
+
+            if (reserved.length > 0) {
+                reservedRooms += reserved.length;
+            }
+
+            if (rented.length > 0) {
+                rentedRooms += rented.length;
+            }
+        }
+
+        lastNatique = {
+            furnished: furnishedRooms,
+            unfurnished: unfurnishedRooms,
+            reserved: reservedRooms,
+            rented: rentedRooms,
+            timestamp: Date.now()
+        };
+
+        if (furnishedRooms + unfurnishedRooms > 0) {
+            sendMessage(lastNatique, 'natique');
+        }
+    });
+}
+
+function sendMessage(data, topic) {
+    console.log('sending message to ' + topic + '...');
     const message = {
-        to: '/topics/ravel',
+        to: '/topics/' + topic,
         priority: 'high',
         data: data
     };
@@ -129,7 +306,17 @@ const app = express();
 
 app.get('/ravel', function (req, res) {
   res.type('json');
-  res.send(lastNotification);
+  res.send(lastRavel);
+});
+
+app.get('/amstel', function (req, res) {
+  res.type('json');
+  res.send(lastAmstel);
+});
+
+app.get('/natique', function (req, res) {
+  res.type('json');
+  res.send(lastNatique);
 });
 
 app.listen(4444);
