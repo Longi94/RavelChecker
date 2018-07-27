@@ -22,8 +22,12 @@ class RavelCheckerApplication : Application() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         if (prefs.getBoolean(MainActivity.PREF_NOTIFICATION_KEY, true)) {
             FirebaseMessaging.getInstance().subscribeToTopic("ravel")
+            FirebaseMessaging.getInstance().subscribeToTopic("nautique")
+            FirebaseMessaging.getInstance().subscribeToTopic("amstel")
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("ravel")
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("nautique")
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("amstel")
         }
 
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

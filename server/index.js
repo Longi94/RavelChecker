@@ -11,7 +11,7 @@ let lastRavel = {};
 
 let lastAmstel = {};
 
-let lastNatique= {};
+let lastNautique = {};
 
 const ravelSites = [
     'http://ravelresidence.studentexperience.nl/plattegrond.php?pagina=2&begane-grond',
@@ -29,7 +29,7 @@ const amstelHomeSites = [
     'http://roomselector.studentexperience.nl/plattegrond.php?pagina=2&begane-grond'
 ];
 
-const natiqueLivingSites = [
+const nautiqueLivingSites = [
     'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&eerste-verdieping',
     'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&tweede-verdieping',
     'http://nautiqueliving.studentexperience.nl/plattegrond.php?pagina=2&derde-verdieping',
@@ -55,7 +55,7 @@ const options = {
 schedule.scheduleJob('*/5 * * * * *', function () {
     checkRavel();
     checkAmstel();
-    checkNatique();
+    checkNautique();
 });
 
 function checkRavel() {
@@ -219,11 +219,11 @@ function checkAmstel() {
     });
 }
 
-function checkNatique() {
+function checkNautique() {
 
-    console.log(new Date() + ' checking natique living...');
+    console.log(new Date() + ' checking nautique living...');
 
-    const promises = natiqueLivingSites.map(url => new Promise((resolve, reject) => {
+    const promises = nautiqueLivingSites.map(url => new Promise((resolve, reject) => {
         request.get(url, (error, response, body) => {
             if (error) {
                 console.log(error);
@@ -270,7 +270,7 @@ function checkNatique() {
             }
         }
 
-        lastNatique = {
+        lastNautique = {
             furnished: furnishedRooms,
             unfurnished: unfurnishedRooms,
             reserved: reservedRooms,
@@ -279,7 +279,7 @@ function checkNatique() {
         };
 
         if (furnishedRooms + unfurnishedRooms > 0) {
-            sendMessage(lastNatique, 'natique');
+            sendMessage(lastNautique, 'nautique');
         }
     });
 }
@@ -314,9 +314,9 @@ app.get('/amstel', function (req, res) {
   res.send(lastAmstel);
 });
 
-app.get('/natique', function (req, res) {
+app.get('/nautique', function (req, res) {
   res.type('json');
-  res.send(lastNatique);
+  res.send(lastNautique);
 });
 
 app.listen(4444);
